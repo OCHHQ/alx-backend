@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask i18n Example</title>
+</head>
+<body>
+    <h1>{{ _('Welcome to Holberton') }}</h1>
+    <p>
+        {% if g.user %}
+            {{ _('You are logged in as %(username)s from %(timezone)s.', username=g.user['name'], timezone=timezone) }}
+        {% else %}
+            {{ _('You are not logged in.') }}
+        {% endif %}
+    </p>
+</body>
+</html>
