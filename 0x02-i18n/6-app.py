@@ -1,7 +1,5 @@
 from flask import Flask, request, g, render_template
-from babel.support import Locale, gettext
-from babel.core import UnknownLocaleError
-import os
+from flask_babel import Babel, gettext as _
 
 app = Flask(__name__)
 
@@ -15,6 +13,12 @@ LOCALE_MAPPING = {
     # Add more mappings as needed
 }
 
+app.config['BABEL_DEFAULT_LOCALE'] = DEFAULT_LOCALE
+babel = Babel(app)
+
+
+# Function to determine the best locale
+@babel.localeselector
 def get_locale():
     """
     Determine the user's preferred locale based on the following priority:
@@ -27,39 +31,38 @@ def get_locale():
         str: The user's preferred locale
     """
     # 1. Get locale from URL parameters
-    login_as = request.args.get('login_as')
-    locale = LOCALE_MAPPING.get(login_as)
+    locale = request.args.get('locale')
+    if locale and locale in SUPPORTED_LOCALES:
+        return locale
 
     # 2. Get locale from user settings
+    login_as = request.args.get('login_as')
+    if login_as:
+        locale = LOCALE_MAPPING.get(login_as)
+
+    # 3. Get locale from user settings (in case the user is logged in)
     if hasattr(g, 'user') and g.user and 'locale' in g.user:
         locale = g.user['locale']
 
-    # 3. Get locale from request header
+    # 4. Get locale from request header
     if not locale:
         header_locale = request.headers.get('Accept-Language')
         if header_locale:
-            # Parse the header and find the best match
-            header_locales = header_locale.split(',')
-            for header_locale in header_locales:
-                try:
-                    locale = Locale.parse(header_locale).language
-                    if locale in SUPPORTED_LOCALES:
-                        break
-                except (ValueError, UnknownLocaleError):
-                    pass
+            locale = request.accept_languages.best_match(SUPPORTED_LOCALES)
 
-    # 4. Use default locale
+    # 5. Use default locale if nothing matches
     return locale or DEFAULT_LOCALE
+
 
 @app.route('/')
 def index():
-    g.user = {'name': 'John Doe', 'locale': 'en'}  # Example user data
-    locale = get_locale()
+    # Example user data, typically set after login
+    g.user = {'name': 'John Doe', 'locale': 'en'}
 
-    # Set the gettext function to use the detected locale
-    _ = lambda s: gettext(s, locale=locale)
-
-    return render_template('6-index.html', locale=locale, name=g.user['name'], _=_)
+    # The _ function is already provided by Babel
+    return render_template(
+            '6-index.html', locale=g.user['locale'],
+            name=g.user['name'])
 
 
 if __name__ == "__main__":
