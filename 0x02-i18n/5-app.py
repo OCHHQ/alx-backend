@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
+"""Basic Flask application with Babel support and user login emulation."""
+
 from flask import Flask, render_template, request, g
 from flask_babel import Babel, gettext as _
+
 
 app = Flask(__name__)
 
 
 class Config:
-    """Configuration for Babel."""
+    """
+    Configuration for Babel.
+
+    Attributes:
+        LANGUAGES (list): Supported languages.
+        BABEL_DEFAULT_LOCALE (str): Default locale.
+        BABEL_DEFAULT_TIMEZONE (str): Default timezone.
+    """
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
@@ -14,6 +24,7 @@ class Config:
 
 app.config.from_object(Config)
 babel = Babel(app)
+
 
 # Mock user database
 users = {
@@ -24,31 +35,48 @@ users = {
 }
 
 
-def get_user():
-    """Get the user from the mock database."""
-    user_id = request.args.get('login_as')
+def get_user() -> dict:
+    """
+    Get the user from the mock database.
+
+    Returns:
+        dict or None: User data or None if not found.
+    """
+    user_id = request.args.get('login_as', type=int)
     if user_id:
-        return users.get(int(user_id))
+        return users.get(user_id)
     return None
 
 
 @app.before_request
 def before_request():
-    """Set the user in the global context before each request."""
+    """
+    Set the user in the global context before each request.
+    """
     g.user = get_user()
 
 
 @babel.localeselector
-def get_locale():
-    """Determine the best match with our supported languages."""
+def get_locale() -> str:
+    """
+    Determine the best match with our supported languages.
+
+    Returns:
+        str: Selected language code.
+    """
     if g.user and g.user['locale'] in app.config['LANGUAGES']:
         return g.user['locale']
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 @app.route('/')
-def index():
-    """Render the homepage with a welcome message."""
+def index() -> str:
+    """
+    Render the homepage with a welcome message.
+
+    Returns:
+        str: Rendered HTML template.
+    """
     return render_template('5-index.html')
 
 
