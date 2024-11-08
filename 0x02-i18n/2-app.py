@@ -11,8 +11,12 @@ class Config:
 
     Attributes:
         LANGUAGES (list): List of available languages.
+        BABEL_DEFAULT_LOCALE (str): Default locale.
+        BABEL_DEFAULT_TIMEZONE (str): Default timezone.
     """
     LANGUAGES = ["en", "fr"]
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_DEFAULT_TIMEZONE = "UTC"
 
 
 babel = Babel()
@@ -33,7 +37,6 @@ def create_app():
     def get_locale():
         """
         Selects the best language based on the request.
-
         Returns:
             str: Selected language code.
         """
@@ -48,6 +51,7 @@ def create_app():
             str: Rendered HTML template.
         """
         return render_template('2-index.html')
+
     return app
 
 
