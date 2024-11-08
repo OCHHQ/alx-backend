@@ -11,8 +11,12 @@ class Config:
 
     Attributes:
         LANGUAGES (list): List of available languages.
+        BABEL_DEFAULT_LOCALE (str): Default locale.
+        BABEL_DEFAULT_TIMEZONE (str): Default timezone.
     """
     LANGUAGES = ["en", "fr"]
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_DEFAULT_TIMEZONE = "UTC"
 
 
 babel = Babel()
