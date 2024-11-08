@@ -1,32 +1,56 @@
 #!/usr/bin/env python3
+"""Basic Flask application with Babel support."""
+
 from flask import Flask, render_template, request
 from flask_babel import Babel
 
-app = Flask(__name__)
-
 
 class Config:
-    """Configuration for Babel."""
+    """
+    Configuration class.
+
+    Attributes:
+        LANGUAGES (list): List of available languages.
+    """
     LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_LOCALE = "en"
-    BABEL_DEFAULT_TIMEZONE = "UTC"
 
 
-app.config.from_object(Config)
-babel = Babel(app)
+babel = Babel()
 
 
-@babel.localeselector
-def get_locale():
-    """Determine the best match with our supported languages."""
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+def create_app():
+    """
+    Creates a Flask application instance.
 
+    Returns:
+        Flask: Application instance.
+    """
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    babel.init_app(app)
 
-@app.route('/')
-def index():
-    """Render the homepage with locale-aware i18n support."""
-    return render_template('2-index.html')
+    @babel.localeselector
+    def get_locale():
+        """
+        Selects the best language based on the request.
+
+        Returns:
+            str: Selected language code.
+        """
+        return request.accept_languages.best_match(Config.LANGUAGES)
+
+    @app.route('/')
+    def index():
+        """
+        Index route.
+
+        Returns:
+            str: Rendered HTML template.
+        """
+        return render_template('2-index.html')
+    return app
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app = create_app()
+    app.run()
