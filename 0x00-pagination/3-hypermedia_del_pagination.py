@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+"""
+Deletion-resilient hypermedia pagination module
+
+This module provides functionality to paginate a dataset of popular baby names,
+allowing for resilience in case items are deleted between queries. The module
+supports paginated retrieval of data, where items are indexed and can handle
+missing items due to deletions, ensuring the user doesn't miss any data when
+changing pages.
+"""
 import csv
 import math
 from typing import List, Dict
