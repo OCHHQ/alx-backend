@@ -1,12 +1,38 @@
+#!/usr/bin/python3
+"""
+MRU Caching Module
+This module implements a Most Recently Used (MRU)
+caching system using OrderedDict.
+The MRU caching system removes the most recently
+used item when the cache is full.
+"""
+
 from base_caching import BaseCaching
 from collections import OrderedDict
 
+
 class MRUCache(BaseCaching):
+    """
+    MRU (Most Recently Used) caching system
+    This class implements a caching system using the MRU algorithm.
+    When the cache is full, it removes the most recently used item.
+    Attributes:
+    cache_data (OrderedDict): Ordered dictionary to store cache items
+    """
     def __init__(self):
+        """Initialize the MRU cache using OrderedDict"""
         super().__init__()
         self.cache_data = OrderedDict()
 
     def put(self, key, item):
+        """
+        Add an item to the cache using MRU algorithm
+        Args:
+            key: The key to identify the item
+            item: The value to be stored
+        If the cache is full, removes the most recently used item
+        before adding the new item.
+        """
         if key is None or item is None:
             return
 
@@ -22,6 +48,15 @@ class MRUCache(BaseCaching):
         self.cache_data[key] = item
 
     def get(self, key):
+        """
+        Retrieve an item from the cache
+
+        Args:
+            key: The key to identify the item
+
+        Returns:
+            The value linked to the key if it exists, None otherwise
+        """
         if key is None or key not in self.cache_data:
             return None
 
