@@ -1,34 +1,30 @@
 #!/usr/bin/python3
-"""FIFO Caaching system"""
-
+""" FIFO caching module """
 from base_caching import BaseCaching
 
 
 class FIFOCache(BaseCaching):
-    """FIFOCache class that inherit from BaseCaching
-    implement a FIFO caching system"""
+    """ FIFO caching system that inherits from BaseCaching """
 
     def __init__(self):
-        """initializing the cache"""
+        """ Initialize the class """
         super().__init__()
-        self.order = []
+        self.order = []  # List to maintain the order of keys
 
     def put(self, key, item):
-        """Add a item  to the cache using FIFO policy"""
-        if key is None or item is None:
-            return
-        if (key not in self.cache_data and
-           len(self.cache_data) >= BaseCaching.MAX_ITEMS):
-            # in python pop mean delete 0 first key
-            first_key = self.order.pop(0)
-            del self.cache_data[first_key]
-            print(f"Discard: {first_key}")
+        """ Add an item in the cache using FIFO """
+        if key is not None and item is not None:
+            if key not in self.cache_data:
+                if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+                    # Remove the first item added (FIFO)
+                    first_key = self.order.pop(0)
+                    del self.cache_data[first_key]
+                    print(f"DISCARD: {first_key}")
 
-        # i would had key and item to the cache
-        self.cache_data[key] = item
-        if key not in self.order:
-            self.order.append(key)  # keep track of order key
+            self.cache_data[key] = item
+            if key not in self.order:
+                self.order.append(key)  # Keep track of the order
 
     def get(self, key):
-        """Get an item from the cache"""
+        """ Retrieve an item from the cache """
         return self.cache_data.get(key, None)
