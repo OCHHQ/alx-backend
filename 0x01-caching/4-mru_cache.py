@@ -1,7 +1,6 @@
 from base_caching import BaseCaching
 from collections import OrderedDict
 
-
 class MRUCache(BaseCaching):
     def __init__(self):
         super().__init__()
